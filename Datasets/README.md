@@ -1,0 +1,1 @@
+Datasets I have chosen to work with is in this repo: [Link](https://github.com/gizenmtl/IMDB-Sentiment-Analysis-and-Text-Classification/tree/master/aclImdb)
