@@ -1,2 +1,4 @@
 # Inverted-Index-Construction
-This is a project for my Information Retrieval &amp; Web Search class.
+The second project of the Information Retrieval & Web Search course.  
+(Spring 2021)  
+Inverted Index (BSBI, SPIMI, Hadoop) 
