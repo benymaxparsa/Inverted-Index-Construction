@@ -47,11 +47,11 @@ Mohammad Mahdi Afkhami | `97149008`  | [Link](https://github.com/mohmehdi)
 [issues-shield]: https://img.shields.io/github/issues/benymaxparsa/Inverted-Index-Construction?style=for-the-badge
 [issues-url]: https://github.com/benymaxparsa/Inverted-Index-Construction/issues
 [issues-closed-shield]: https://img.shields.io/github/issues-closed/benymaxparsa/Inverted-Index-Construction?style=for-the-badge
-[issues-closed-url]: https://github.com/benymaxparsa/Inverted-Index-Construction?q=is%3Aissue+is%3Aclosed
+[issues-closed-url]: https://github.com/benymaxparsa/Inverted-Index-Construction/issues?q=is%3Aissue+is%3Aclosed
 [pull-req-shield]: https://img.shields.io/github/issues-pr/benymaxparsa/Inverted-Index-Construction?style=for-the-badge
 [pull-req-url]: https://github.com/benymaxparsa/Inverted-Index-Construction/pulls
 [pull-closed-shield]: https://img.shields.io/github/issues-pr-closed/benymaxparsa/Inverted-Index-Construction?style=for-the-badge
-[pull-closed-url]: https://github.com/bbenymaxparsa/Inverted-Index-Construction/pulls?q=is%3Apr+is%3Aclosed
+[pull-closed-url]: https://github.com/benymaxparsa/Inverted-Index-Construction/pulls?q=is%3Apr+is%3Aclosed
 [milestones-shield]: https://img.shields.io/github/milestones/all/benymaxparsa/Inverted-Index-Construction?style=for-the-badge
 [milestones-url]: https://github.com/benymaxparsa/Inverted-Index-Construction/milestones
 [license-shield]: https://img.shields.io/github/license/benymaxparsa/Inverted-Index-Construction?style=for-the-badge
