@@ -26,7 +26,7 @@ class BSBIindexer:
         self.docId_to_terms = None
         self.current_termId = 0
         self.current_block_size = 0
-        self.eof = False
+        self.end_of_file = False
         self.porter = PorterStemmer()
 
     def making_index(self):
@@ -72,5 +72,52 @@ class BSBIindexer:
                 os.remove(self.output_dir)
                 os.mkdir(self.output_dir)
 
-        
 
+        # Make Index
+        while True:
+            self.parse_next_document()
+            self.invert_document()
+            
+
+
+
+
+    def parse_next_document(self):
+        self.docId_to_terms = None
+
+        # receive next doc and it's size
+        if self.current_docId > self.number_of_docs - 1:
+            self.end_of_file = True
+            return
+        current_document = self.docId_to_doc_map[self.current_docId]
+        current_document = os.path.join(self.input_dir, current_document)
+        self.current_file = open(current_document, 'rt', encoding='utf-8')
+        current_file_size = os.path.getsize(current_document)
+
+        # parse
+        if current_file_size <= self.block_size:
+            self.docId_to_terms = [self.current_docId, self.current_file.read()]
+            self.current_file.close()
+            self.current_docId += 1
+        else:
+            # overflowed the block
+            print("Error! {} size exceeds block size limit.".format(
+                self.docId_to_doc_map[self.current_docId]
+            ))
+            print("file size vs block size: {} Kb > {} Kb".format(
+                current_file_size / 1024,
+                self.block_size / 1024
+            ))
+            self.end_of_file = True
+
+        # extract tokens form a doc and process them into terms
+        self.docId_to_terms[1] = word_tokenize(self.docId_to_terms[1])
+        self.process_terms(self.docId_to_terms[1])
+
+
+    def process_terms(self, param):
+        pass
+            
+
+    def invert_document(self):
+        pass
