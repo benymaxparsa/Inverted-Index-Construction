@@ -9,7 +9,7 @@ from nltk.tokenize import word_tokenize
 from pympler import asizeof
 
 
-class BSBIindexer:
+class BSBI_indexing:
     def __init__(self, input_dir, block_size, output_dir):
         self.input_dir = input_dir
         self.block_size = block_size
@@ -20,13 +20,13 @@ class BSBIindexer:
         self.total_docs_size = 0
         self.current_docId = 0
         self.current_file = 0
-        self.punctuation = punctuation + '-—'
+        self.punctuation = punctuation
         self.term_to_docIds_map = {}
         self.term_to_docIds_sorted = []
         self.docId_to_terms = None
         self.current_termId = 0
         self.current_block_size = 0
-        self.end_of_file = False
+        self.end_or_fail = False
         self.porter = PorterStemmer()
 
     def making_index(self):
@@ -87,7 +87,7 @@ class BSBIindexer:
 
         # receive next doc and it's size
         if self.current_docId > self.number_of_docs - 1:
-            self.end_of_file = True
+            self.end_or_fail = True
             return
         current_document = self.docId_to_doc_map[self.current_docId]
         current_document = os.path.join(self.input_dir, current_document)
@@ -108,15 +108,23 @@ class BSBIindexer:
                 current_file_size / 1024,
                 self.block_size / 1024
             ))
-            self.end_of_file = True
+            self.end_or_fail = True
 
         # extract tokens form a doc and process them into terms
         self.docId_to_terms[1] = word_tokenize(self.docId_to_terms[1])
-        self.process_terms(self.docId_to_terms[1])
+        self.preprocess_terms(self.docId_to_terms[1])
 
 
-    def process_terms(self, param):
-        pass
+    def preprocess_terms(self, terms):
+        size_of_terms = len(terms)
+        for i in range(0, size_of_terms):
+            # Removing Punctuation
+            terms[i] = "".join([char for char in terms[i] if char not in punctuation])
+            # Lowering all terms
+            terms[i] = terms[i].lower()
+            # stemming terms
+            terms[i] = self.porter.stem(terms[i])
+
             
 
     def invert_document(self):
