@@ -64,7 +64,7 @@ class BSBI_indexing:
             os.mkdir(self.output_dir)
         else:
             if os.path.isdir(self.output_dir):
-                for dir_path, dir_names,file_names in os.walk(self.output_dir):
+                for dir_path, dir_names, file_names in os.walk(self.output_dir):
                     for file_name in file_names:
                         file_pointer = os.path.join(dir_path, file_name)
                         os.remove(file_pointer)
@@ -72,15 +72,10 @@ class BSBI_indexing:
                 os.remove(self.output_dir)
                 os.mkdir(self.output_dir)
 
-
         # Make Index
         while True:
             self.parse_next_document()
             self.invert_document()
-            
-
-
-
 
     def parse_next_document(self):
         self.docId_to_terms = None
@@ -114,7 +109,6 @@ class BSBI_indexing:
         self.docId_to_terms[1] = word_tokenize(self.docId_to_terms[1])
         self.preprocess_terms(self.docId_to_terms[1])
 
-
     def preprocess_terms(self, terms):
         size_of_terms = len(terms)
         for i in range(0, size_of_terms):
@@ -125,7 +119,33 @@ class BSBI_indexing:
             # stemming terms
             terms[i] = self.porter.stem(terms[i])
 
-            
-
     def invert_document(self):
-        pass
+        if self.end_or_fail:
+            return
+        # store terms as term-document postings
+        index = 0
+        number_of_duplicate_terms = 0
+        document_id = self.docId_to_terms[0]
+        terms = self.docId_to_terms[1]
+        while index < len(terms):
+            term = terms[index]
+            if term not in self.term_to_docIds_map:
+                number_of_duplicate_terms += 1
+                size = sys.getsizeof(term)
+                inc = size % 8
+                if inc != 0:
+                    size += 8 - inc
+                self.term_to_docIds_map[term] = []
+                self.current_block_size += size
+            self.term_to_docIds_map[term].append(document_id)
+            index += 1
+
+        size = sys.getsizeof(document_id)
+        self.current_block_size += size
+        self.current_block_size += number_of_duplicate_terms * 56
+        self.current_block_size += number_of_duplicate_terms * size
+        self.current_block_size += 8 * index
+
+        del self.docId_to_terms, terms
+
+
