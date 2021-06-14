@@ -77,6 +77,27 @@ class BSBI_indexing:
             self.parse_next_document()
             self.invert_document()
 
+            size = sys.getsizeof(self.term_to_docIds_map)
+            current_block_size = self.current_block_size + size
+            if current_block_size >= self.block_size or self.end_or_fail:
+                # now it's time to sort term-doc by terms and write it to the disk
+                terms = list(self.term_to_docIds_map.keys())
+                terms.sort()
+                self.term_to_docIds_sorted = []
+                for term in terms:
+                    self.term_to_docIds_sorted.append((term, self.term_to_docIds_map[term]))
+                    del self.term_to_docIds_map[term]
+            self.write_block()
+            self.current_block += 1
+            self.term_to_docIds_map = {}
+            self.current_block_size = 0
+            gc.collect()
+            if self.end_or_fail:
+                break
+        
+        self.merge_blocks()
+        self.clear_output_directory()
+
     def parse_next_document(self):
         self.docId_to_terms = None
 
@@ -147,5 +168,14 @@ class BSBI_indexing:
         self.current_block_size += 8 * index
 
         del self.docId_to_terms, terms
+
+    def write_block(self):
+        pass
+
+    def merge_blocks(self):
+        pass
+
+    def clear_output_directory(self):
+        pass
 
 
