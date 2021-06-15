@@ -1,4 +1,3 @@
-import gc
 import os
 import sys
 from collections import deque
@@ -14,10 +13,10 @@ class BSBI_indexing:
         self.input_dir = input_dir
         self.block_size = block_size
         self.output_dir = output_dir
-        self.number_of_docs = 0
+        self.number_of_documents = 0
         self.docId_to_doc_map = {}
         self.current_block = 0
-        self.total_docs_size = 0
+        self.total_documents_size = 0
         self.current_docId = 0
         self.current_file = 0
         self.punctuation = punctuation
@@ -30,7 +29,7 @@ class BSBI_indexing:
         self.porter = PorterStemmer()
 
     def making_index(self):
-        self.total_docs_size = 0
+        self.total_documents_size = 0
 
         # Construct a doc to docId mapping and find total doc size
         doc_index = 0
@@ -54,10 +53,10 @@ class BSBI_indexing:
                             self.block_size / 1024
                         ))
                         sys.exit(1)
-                    self.total_docs_size += file_size
+                    self.total_documents_size += file_size
                 doc_index += 1
 
-        self.number_of_docs = len(self.docId_to_doc_map)
+        self.number_of_documents = len(self.docId_to_doc_map)
 
         # ready output directory
         if not os.path.exists(self.output_dir):
@@ -66,8 +65,7 @@ class BSBI_indexing:
             if os.path.isdir(self.output_dir):
                 for dir_path, dir_names, file_names in os.walk(self.output_dir):
                     for file_name in file_names:
-                        file_pointer = os.path.join(dir_path, file_name)
-                        os.remove(file_pointer)
+                        os.remove(os.path.join(dir_path, file_name))
             else:
                 os.remove(self.output_dir)
                 os.mkdir(self.output_dir)
@@ -91,10 +89,10 @@ class BSBI_indexing:
             self.current_block += 1
             self.term_to_docIds_map = {}
             self.current_block_size = 0
-            gc.collect()
             if self.end_or_fail:
                 break
-        
+
+        print("merging state initiated, Please wait")
         self.merge_blocks()
         self.clear_output_directory()
 
@@ -102,7 +100,7 @@ class BSBI_indexing:
         self.docId_to_terms = None
 
         # receive next doc and it's size
-        if self.current_docId > self.number_of_docs - 1:
+        if self.current_docId > self.number_of_documents - 1:
             self.end_or_fail = True
             return
         current_document = self.docId_to_doc_map[self.current_docId]
@@ -170,12 +168,20 @@ class BSBI_indexing:
         del self.docId_to_terms, terms
 
     def write_block(self):
-        pass
+        with open("{}/block{}.txt".format(self.output_dir, self.current_block), 'wt', encoding='utf-8') as file:
+            for term, documents in self.term_to_docIds_sorted:
+                for docId in documents:
+                    file.write('Term: {} , DocId: {}\n'.format(term, docId))
+        del self.term_to_docIds_map, file
 
     def merge_blocks(self):
         pass
 
     def clear_output_directory(self):
-        pass
+        for dirpath, dirnames, filenames in os.walk(self.output_dir):
+            for file in filenames:
+                if not file == 'output.txt':
+                    os.remove(os.path.join(dirpath, file))
+
 
 
