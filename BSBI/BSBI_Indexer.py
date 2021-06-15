@@ -85,16 +85,17 @@ class BSBI_indexing:
                 for term in terms:
                     self.term_to_docIds_sorted.append((term, self.term_to_docIds_map[term]))
                     del self.term_to_docIds_map[term]
-            self.write_block()
-            self.current_block += 1
-            self.term_to_docIds_map = {}
-            self.current_block_size = 0
-            if self.end_or_fail:
-                break
+                self.term_to_docIds_map = sorted(self.term_to_docIds_map.items())
+                self.write_block()
+                self.current_block += 1
+                self.term_to_docIds_map = {}
+                self.current_block_size = 0
+                if self.end_or_fail:
+                    break
 
         print("merging state initiated, Please wait")
         self.merge_blocks()
-        self.clear_output_directory()
+        # self.clear_output_directory()
 
     def parse_next_document(self):
         self.docId_to_terms = None
@@ -171,7 +172,7 @@ class BSBI_indexing:
         with open("{}/block{}.txt".format(self.output_dir, self.current_block), 'wt', encoding='utf-8') as file:
             for term, documents in self.term_to_docIds_sorted:
                 for docId in documents:
-                    file.write('Term: {} , DocId: {}\n'.format(term, docId))
+                    file.write('{} , {}\n'.format(term, docId))
         del self.term_to_docIds_map, file
 
     def merge_blocks(self):
