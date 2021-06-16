@@ -144,13 +144,13 @@ class BSBI_indexing:
             return
         # store terms as term-document postings
         index = 0
-        number_of_duplicate_terms = 0
+        number_of_new_terms = 0
         document_id = self.docId_to_terms[0]
         terms = self.docId_to_terms[1]
         while index < len(terms):
             term = terms[index]
             if term not in self.term_to_docIds_map:
-                number_of_duplicate_terms += 1
+                number_of_new_terms += 1
                 size = sys.getsizeof(term)
                 inc = size % 8
                 if inc != 0:
@@ -162,8 +162,8 @@ class BSBI_indexing:
 
         size = sys.getsizeof(document_id)
         self.current_block_size += size
-        self.current_block_size += number_of_duplicate_terms * 56
-        self.current_block_size += number_of_duplicate_terms * size
+        self.current_block_size += number_of_new_terms * 56
+        self.current_block_size += number_of_new_terms * size
         self.current_block_size += 8 * index
 
         del self.docId_to_terms, terms
@@ -176,7 +176,21 @@ class BSBI_indexing:
         del self.term_to_docIds_map, file
 
     def merge_blocks(self):
-        pass
+        block_queue = deque()
+        blockID = 0
+        for dirpath, dirnames, filenames in os.walk(self.output_dir):
+            for file in filenames:
+                file_path = os.path.join(dirpath, file)
+                block_queue.append(file_path)
+
+        del filenames, file, dirpath
+        while len(block_queue)>1 :
+            file_a = block_queue.popleft()
+            file_b = block_queue.popleft()
+
+            merged_path = os.path.join(self.output_dir, 'merged{}.txt'.format(blockID))
+
+
 
     def clear_output_directory(self):
         for dirpath, dirnames, filenames in os.walk(self.output_dir):
