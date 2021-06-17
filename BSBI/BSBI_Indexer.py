@@ -191,28 +191,80 @@ class BSBI_indexing:
             merged_path = os.path.join(self.output_dir, 'merged{}.txt'.format(block_id))
             file_a = open(file_path_a, 'rt', encoding='utf-8')
             file_b = open(file_path_b, 'rt', encoding='utf-8')
-            term_doc_pair_a = file_a.readline()
-            term_doc_pair_b = file_b.readline()
-            if term_doc_pair_a == '' or term_doc_pair_b == '':
+            term_to_doc_a = file_a.readline()
+            term_to_doc_b = file_b.readline()
+            if term_to_doc_a == '' or term_to_doc_b == '':
                 # file is empty
                 file_a.close()
                 file_b.close()
-                if term_doc_pair_a == '' and term_doc_pair_b == '':
+                if term_to_doc_a == '' and term_to_doc_b == '':
                     block_id += 2
                     continue
-                elif term_doc_pair_a == '':
+                elif term_to_doc_a == '':
                     os.rename(file_path_b, merged_path)
-                elif term_doc_pair_b == '':
+                elif term_to_doc_b == '':
                     os.rename(file_path_a, merged_path)
                 block_queue.append(merged_path)
                 block_id += 1
                 continue
             merged_file = open(merged_path, 'wt', encoding='utf-8')
-            term_doc_pair_a = term_doc_pair_a.split(' ')
-            term_doc_pair_b = term_doc_pair_b.split(' ')
+            term_doc_a = term_to_doc_a[:-1].split(' ')
+            term_doc_b = term_to_doc_b[:-1].split(' ')
 
-    def clear_output_directory(self):
-        for dirpath, dirnames, filenames in os.walk(self.output_dir):
-            for file in filenames:
-                if not file == 'output.txt':
-                    os.remove(os.path.join(dirpath, file))
+            # read line by line from files a , b and  writing on merge file until one of them  reaches end of file
+            while True:
+                if term_doc_a[0] < term_doc_b[0] or (
+                        term_doc_a[0] == term_doc_b[0] and int(term_doc_a[1]) < int(term_doc_b[1])):
+                    min_term_doc = term_doc_a
+                    file_pointer = file_a
+                else:
+                    min_term_doc = term_doc_b
+                    file_pointer = file_b
+                merged_file.write(min_term_doc[0] + ' ' + min_term_doc[1] + '\n')
+
+                if file_pointer == file_a:  # if min was from a
+                    term_doc_a = file_a.readline()
+                    if term_doc_a == '':
+                        break               # file ended
+                    term_doc_a = term_doc_a[:-1].split(' ')
+                else:                       # if min was from b
+                    term_doc_b = file_b.readline()
+                    if term_doc_b == '':
+                        break               # file ended
+                    term_doc_b = term_doc_b[:-1].split(' ')
+
+                # check if a is reached the end write b till the end of it in merge file vise versa
+            if term_doc_a == '':
+                file_pointer = file_b
+                file_a.close()
+            else:
+                file_pointer = file_a
+                file_b.close()
+            min_term_doc = file_pointer.readline()
+            while min_term_doc != '':
+                # write till end of selected file
+                min_term_doc = min_term_doc[:-1].split(' ')
+                merged_file.write(min_term_doc[0] + ' ' + min_term_doc[1] + '\n')
+                min_term_doc = file_pointer.readline()
+            file_pointer.close()
+            merged_file.close()
+            block_queue.append(merged_path)
+            block_id += 1
+
+        # convert one last merged file docs into doc_ids
+        merged_file = open(block_queue.pop(), 'rt', encoding='utf-8')
+        output_file = open(os.path.join(self.output_dir, 'output.txt'), 'wt', encoding='utf-8')
+        term_doc = merged_file.readline()
+        while term_doc != '':
+            term_doc = term_doc[:-1].split(' ')
+            output_file.write(term_doc[0] + ' ' + self.docId_to_doc_map[int(term_doc[1])] + '\n')
+            term_doc = merged_file.readline()
+        merged_file.close()
+        output_file.close()
+
+
+def clear_output_directory(self):
+    for dirpath, dirnames, filenames in os.walk(self.output_dir):
+        for file in filenames:
+            if not file == 'output.txt':
+                os.remove(os.path.join(dirpath, file))
