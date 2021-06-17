@@ -5,7 +5,6 @@ from string import punctuation
 
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
-from pympler import asizeof
 
 
 class BSBI_indexing:
@@ -172,31 +171,48 @@ class BSBI_indexing:
         with open("{}/block{}.txt".format(self.output_dir, self.current_block), 'wt', encoding='utf-8') as file:
             for term, documents in self.term_to_docIds_sorted:
                 for docId in documents:
-                    file.write('{} , {}\n'.format(term, docId))
+                    file.write('{} {}\n'.format(term, docId))
         del self.term_to_docIds_map, file
 
     def merge_blocks(self):
         block_queue = deque()
-        blockID = 0
+        block_id = 0
         for dirpath, dirnames, filenames in os.walk(self.output_dir):
             for file in filenames:
                 file_path = os.path.join(dirpath, file)
                 block_queue.append(file_path)
 
         del filenames, file, dirpath
-        while len(block_queue)>1 :
-            file_a = block_queue.popleft()
-            file_b = block_queue.popleft()
 
-            merged_path = os.path.join(self.output_dir, 'merged{}.txt'.format(blockID))
+        while len(block_queue) > 1:
+            file_path_a = block_queue.popleft()
+            file_path_b = block_queue.popleft()
 
-
+            merged_path = os.path.join(self.output_dir, 'merged{}.txt'.format(block_id))
+            file_a = open(file_path_a, 'rt', encoding='utf-8')
+            file_b = open(file_path_b, 'rt', encoding='utf-8')
+            term_doc_pair_a = file_a.readline()
+            term_doc_pair_b = file_b.readline()
+            if term_doc_pair_a == '' or term_doc_pair_b == '':
+                # file is empty
+                file_a.close()
+                file_b.close()
+                if term_doc_pair_a == '' and term_doc_pair_b == '':
+                    block_id += 2
+                    continue
+                elif term_doc_pair_a == '':
+                    os.rename(file_path_b, merged_path)
+                elif term_doc_pair_b == '':
+                    os.rename(file_path_a, merged_path)
+                block_queue.append(merged_path)
+                block_id += 1
+                continue
+            merged_file = open(merged_path, 'wt', encoding='utf-8')
+            term_doc_pair_a = term_doc_pair_a.split(' ')
+            term_doc_pair_b = term_doc_pair_b.split(' ')
 
     def clear_output_directory(self):
         for dirpath, dirnames, filenames in os.walk(self.output_dir):
             for file in filenames:
                 if not file == 'output.txt':
                     os.remove(os.path.join(dirpath, file))
-
-
-
