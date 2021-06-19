@@ -1,9 +1,9 @@
 from BSBI.BSBI_Indexer import BSBI_indexing
 
 if __name__ == '__main__':
-    input_dir = "Datasets/input+"
+    input_dir = "Datasets/input"
     output_dir = "Datasets/output"
-    block_size = 5 * (1024 ** 2)
+    block_size = 0.5 * (1024 ** 2)
 
     indexer = BSBI_indexing(input_dir, int(block_size), output_dir)
     indexer.making_index()

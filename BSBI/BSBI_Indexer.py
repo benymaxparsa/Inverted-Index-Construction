@@ -26,6 +26,7 @@ class BSBI_indexing:
         self.current_block_size = 0
         self.end_of_files = False
         self.porter = PorterStemmer()
+        self.number_of_merges = 0
 
     def making_index(self):
         self.total_documents_size = 0
@@ -72,8 +73,9 @@ class BSBI_indexing:
 
         # Make Index
         while True:
-            print("Processing Document #{}, please wait. File: {}, Current Block {}"
-                  .format(self.current_docId, self.docId_to_doc_map[self.current_docId], self.current_block))
+            if self.current_docId < self.number_of_documents:
+                print("Processing Document #{}, please wait. File: {}, Current Block {}"
+                      .format(self.current_docId, self.docId_to_doc_map[self.current_docId], self.current_block))
             self.parse_next_document()
             self.invert_document()
 
@@ -97,7 +99,8 @@ class BSBI_indexing:
 
         print("merging state initiated, Please wait")
         self.merge_blocks()
-        # self.clear_output_directory()
+        self.clear_output_directory()
+        print("All done!")
 
     def parse_next_document(self):
         self.docId_to_terms = None
@@ -189,6 +192,8 @@ class BSBI_indexing:
         while len(block_queue) > 1:
             file_path_a = block_queue.popleft()
             file_path_b = block_queue.popleft()
+            print("merge round #{}".format(self.number_of_merges + 1))
+            self.number_of_merges += 1
 
             merged_path = os.path.join(self.output_dir, 'merged{}.txt'.format(block_id))
             file_a = open(file_path_a, 'rt', encoding='utf-8')
@@ -227,12 +232,12 @@ class BSBI_indexing:
                 if file_pointer == file_a:  # if min was from a
                     term_doc_a = file_a.readline()
                     if term_doc_a == '':
-                        break               # file ended
+                        break  # file ended
                     term_doc_a = term_doc_a[:-1].split(' ')
-                else:                       # if min was from b
+                else:  # if min was from b
                     term_doc_b = file_b.readline()
                     if term_doc_b == '':
-                        break               # file ended
+                        break  # file ended
                     term_doc_b = term_doc_b[:-1].split(' ')
 
                 # check if a is reached the end write b till the end of it in merge file vise versa
@@ -264,9 +269,8 @@ class BSBI_indexing:
         merged_file.close()
         output_file.close()
 
-
-def clear_output_directory(self):
-    for dirpath, dirnames, filenames in os.walk(self.output_dir):
-        for file in filenames:
-            if not file == 'output.txt':
-                os.remove(os.path.join(dirpath, file))
+    def clear_output_directory(self):
+        for dirpath, dirnames, filenames in os.walk(self.output_dir):
+            for file in filenames:
+                if not file == 'output.txt':
+                    os.remove(os.path.join(dirpath, file))
