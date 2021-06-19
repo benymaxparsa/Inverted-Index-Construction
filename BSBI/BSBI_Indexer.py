@@ -24,30 +24,31 @@ class BSBI_indexing:
         self.docId_to_terms = None
         self.current_termId = 0
         self.current_block_size = 0
-        self.end_or_fail = False
+        self.end_of_files = False
         self.porter = PorterStemmer()
 
     def making_index(self):
         self.total_documents_size = 0
 
+        print("constructing doc-docID map, please wait")
         # Construct a doc to docId mapping and find total doc size
         doc_index = 0
         for dir_path, dir_names, file_names in os.walk(self.input_dir):
             file_names.sort()
             for file_name in file_names:
                 self.docId_to_doc_map[doc_index] = file_name
-                file_pointer = os.path.join(dir_path, file_name)
+                file_path = os.path.join(dir_path, file_name)
 
-                # making sure fp points to file not a link
-                if not os.path.islink(file_pointer):
-                    file_size = os.path.getsize(file_pointer)
+                # making sure file path points to file, not a link
+                if not os.path.islink(file_path):
+                    file_size = os.path.getsize(file_path)
 
                     # if file exceeds the block size limit
                     if file_size >= self.block_size:
-                        print("Error! {} size exceeds block size limit.".format(
+                        print("Program failed! {} size exceeds block size limit.".format(
                             self.docId_to_doc_map[self.current_docId]
                         ))
-                        print("file size vs block size: {} Kb > {} Kb".format(
+                        print("file size {} Kb > block size {} Kb".format(
                             file_size / 1024,
                             self.block_size / 1024
                         ))
@@ -71,12 +72,14 @@ class BSBI_indexing:
 
         # Make Index
         while True:
+            print("Processing Document #{}, please wait. File: {}, Current Block {}"
+                  .format(self.current_docId, self.docId_to_doc_map[self.current_docId], self.current_block))
             self.parse_next_document()
             self.invert_document()
 
             size = sys.getsizeof(self.term_to_docIds_map)
             current_block_size = self.current_block_size + size
-            if current_block_size >= self.block_size or self.end_or_fail:
+            if current_block_size >= self.block_size or self.end_of_files:
                 # now it's time to sort term-doc by terms and write it to the disk
                 terms = list(self.term_to_docIds_map.keys())
                 terms.sort()
@@ -89,7 +92,7 @@ class BSBI_indexing:
                 self.current_block += 1
                 self.term_to_docIds_map = {}
                 self.current_block_size = 0
-                if self.end_or_fail:
+                if self.end_of_files:
                     break
 
         print("merging state initiated, Please wait")
@@ -101,14 +104,13 @@ class BSBI_indexing:
 
         # receive next doc and it's size
         if self.current_docId > self.number_of_documents - 1:
-            self.end_or_fail = True
+            self.end_of_files = True
             return
-        current_document = self.docId_to_doc_map[self.current_docId]
-        current_document = os.path.join(self.input_dir, current_document)
-        self.current_file = open(current_document, 'rt', encoding='utf-8')
-        current_file_size = os.path.getsize(current_document)
+        current_document_path = os.path.join(self.input_dir, self.docId_to_doc_map[self.current_docId])
+        self.current_file = open(current_document_path, 'rt', encoding='utf-8')
+        current_file_size = os.path.getsize(current_document_path)
 
-        # parse
+        # parse document & make docId to terms List
         if current_file_size <= self.block_size:
             self.docId_to_terms = [self.current_docId, self.current_file.read()]
             self.current_file.close()
@@ -122,7 +124,7 @@ class BSBI_indexing:
                 current_file_size / 1024,
                 self.block_size / 1024
             ))
-            self.end_or_fail = True
+            self.end_of_files = True
 
         # extract tokens form a doc and process them into terms
         self.docId_to_terms[1] = word_tokenize(self.docId_to_terms[1])
@@ -139,7 +141,7 @@ class BSBI_indexing:
             terms[i] = self.porter.stem(terms[i])
 
     def invert_document(self):
-        if self.end_or_fail:
+        if self.end_of_files:
             return
         # store terms as term-document postings
         index = 0
