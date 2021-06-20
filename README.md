@@ -19,11 +19,94 @@
   <p align="center">
     The second project of the Information Retrieval & Web Search course  
   <br />
-    Inverted Index (BSBI, SPIMI, Hadoop) 
+    Inverted Index (BSBI) 
     <br />
     (Spring 2021)
+<br />
+
+  
+
+<!-- TABLE OF CONTENTS -->
+<details open="open">
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#license">License</a></li>
+  </ol>
+</details>
 
 
+
+<!-- ABOUT THE PROJECT -->
+## About The Project
+
+As for large collections that rely on secondary storage, the primary requirement for an external sorting algorithm is that any disk seeks it does during sorting be as few as possible, It's due to the fact that sequential disk reads are faster than single unit seeks.  A solution to this issue is the blocked sort-based indexing algorithm (A.K.A BSBI).  
+
+After segmenting the collection into blocks of equal size, BSBI sorts the termID-docID pairs of every block in memory, stores intermediate sorted results on disk, and ultimately merges all intermediate results into the final index.
+
+Because of sorting time complexity, BSBI has a time complexity of O( **T** * Log_2 **T** ) where **T** is the upper bound of the number of items we must sort (the number of termID–docID pairs). Typically, however, the amount of time actually spent indexing depends largely on the amount of time it takes to parse the documents (ParseNextBlock) and perform the final merge (MergeBlocks).  
+
+
+### Built With
+
+
+* [Python](https://www.python.org)
+* [NLTK library](https://www.nltk.org)
+* [PyCharm](https://www.jetbrains.com/pycharm)
+
+
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+To get a local copy up and running follow these simple example steps.
+
+### Prerequisites
+
+* Python 3, An IDE 
+
+* nltk, string, collections, sys, os libraries installed
+
+* Git
+
+### Installation
+
+1. Clone the repo
+ ```sh
+   git clone https://github.com/benymaxparsa/Inverted-Index-Construction.git
+ ```
+2. Install nltk required data  
+2. Run the code :) 
+
+
+
+<!-- USAGE EXAMPLES -->
+## Usage
+
+Put all of your documents in a single folder at the repository path, and do not separate them into different folders. Now go back to main.py and define the path for your input folder, then specify where the results will be saved.  
+You can run the code now, and based on the number of inputs, you will see the result index in the output directory after a while.
+
+
+<!-- LICENSE -->
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+
+  
 
 ## Project Members:  
 
