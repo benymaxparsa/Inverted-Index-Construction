@@ -47,7 +47,7 @@ class BSBI_indexing:
                     # if file exceeds the block size limit
                     if file_size >= self.block_size:
                         print("Program failed! {} size exceeds block size limit.".format(
-                            self.docId_to_doc_map[self.current_docId]
+                            self.docId_to_doc_map[doc_index]
                         ))
                         print("file size {} Kb > block size {} Kb".format(
                             file_size / 1024,
@@ -257,7 +257,7 @@ class BSBI_indexing:
             block_queue.append(merged_path)
             block_id += 1
 
-        # convert one last merged file docs into doc_ids
+        # convert one last merged file doc_ids into doc file name
         merged_file = open(block_queue.pop(), 'rt', encoding='utf-8')
         output_file = open(os.path.join(self.output_dir, 'output.txt'), 'wt', encoding='utf-8')
         term_doc = merged_file.readline()
