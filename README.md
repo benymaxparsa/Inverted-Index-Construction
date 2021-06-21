@@ -101,7 +101,7 @@ Put all of your documents in a single folder at the repository path, and do not 
 You can run the code now, and based on the number of inputs, you will see the result index in the output directory after a while.
 
 ## How it Works
-  you can read about the algorithem works [here](BSBI/README.md) 
+  To learn more about the algorithm and how it works click [here](BSBI/README.md) 
   
 <!-- LICENSE -->
 ## License
