@@ -99,7 +99,6 @@ class BSBI_indexing:
 
         print("merging state initiated, Please wait")
         self.merge_blocks()
-        self.clear_output_directory()
         print("All done!")
 
     def parse_next_document(self):
