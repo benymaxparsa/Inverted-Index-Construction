@@ -44,6 +44,7 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#how-it-works">How it Works</a></li>
     <li><a href="#license">License</a></li>
   </ol>
 </details>
@@ -99,7 +100,9 @@ To get a local copy up and running follow these simple example steps.
 Put all of your documents in a single folder at the repository path, and do not separate them into different folders. Now go back to main.py and define the path for your input folder, then specify where the results will be saved.  
 You can run the code now, and based on the number of inputs, you will see the result index in the output directory after a while.
 
-
+## How it Works
+  you can read about the algorithem works [here](BSBI/README.md) 
+  
 <!-- LICENSE -->
 ## License
 
