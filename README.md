@@ -45,6 +45,7 @@
     </li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#how-it-works">How it Works</a></li>
+    <li><a href="#testing-and-screenshots">Testing and Screenshots</a></li>
     <li><a href="#license">License</a></li>
   </ol>
 </details>
@@ -97,11 +98,38 @@ To get a local copy up and running follow these simple example steps.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Put all of your documents in a single folder at the repository path, and do not separate them into different folders. Now go back to main.py and define the path for your input folder, then specify where the results will be saved.  
-You can run the code now, and based on the number of inputs, you will see the result index in the output directory after a while.
+Put all of your documents in a single folder at the "Datasets/input" path, and do not separate them into different folders.   
+You can run the code now, and based on the number of inputs, you will see the result index in the output directory after a while.  
+if you want to change input/output directory go back to main.py and define the path for your input folder, then specify where the results will be saved.  
 
+  
 ## How it Works
   To learn more about the algorithm and how it works click [here](BSBI/README.md) 
+  
+  
+  
+## Testing and Screenshots  
+  We used a dataset containing 100,000 documents for testing, click [here](Datasets/input.7z) to download  
+  You can extract it by using [7-zip](https://www.7-zip.org/)  
+  
+  ### Screenshots:  
+  ![Initiate](Screenshots/init.jpg)  
+  *In this case, 40 MB was set as our block size*  
+  
+  ![block transition](Screenshots/block.jpg)  
+  *Having processed 14,338 documents, the program switched to the second block once the first block had been filled.*  
+  
+  ![end of program](Screenshots/end.jpg)  
+  *Once all 100,000 documents had been processed, the program stopped making new blocks and switched to merging mode. All 8 blocks were merged using 7 rounds of merging*  
+  
+  ![output directory](Screenshots/directory.jpg)  
+  *This is our output directory before the program removed the block and merged temp files, The block sizes are not displayed properly for some unknown reason!*  
+  
+  ![output sample 1](Screenshots/output.jpg)
+  ![output sample 2](Screenshots/output2.jpg)  
+  *Here are two examples of how the final index output looks*
+  
+  
   
 <!-- LICENSE -->
 ## License
