@@ -104,7 +104,8 @@ if you want to change input/output directory go back to main.py and define the p
 
   
 ## How it Works
-  To learn more about the algorithm and how it works click [here](BSBI/README.md) 
+  To learn more about the algorithm and how it works click [here](BSBI/README.md)  
+  To see the code click [here](BSBI/BSBI_Indexer.py)
   
   
   
